@@ -2,16 +2,17 @@ package models
 
 import (
 	"fmt"
+	"ginchat/utils"
 	"time"
 )
 import "gorm.io/gorm"
+
 type UserBasic struct {
 	gorm.Model
 	Name          string
 	PassWord      string
 	Phone         string `valid:"matches(^1[3-9]{1}\\d{9}$)"`
 	Email         string `valid:"email"`
-	Avatar        string //头像
 	Identity      string
 	ClientIp      string
 	ClientPort    string
@@ -35,3 +36,18 @@ func GetUserList() []*UserBasic {
 	return data
 }
 
+func CreateUser(user UserBasic) *gorm.DB {
+	return utils.DB.Create(&user)
+}
+
+func DeleteUser(user UserBasic) *gorm.DB {
+	return utils.DB.Delete(&user)
+}
+
+func UpdateUser(user UserBasic) *gorm.DB {
+	return utils.DB.Updates(&user)
+	//return utils.DB.Model(&user).Updates(UserBasic{
+	//	Name:          user.Name,
+	//	PassWord:      user.PassWord,
+	//})
+}
