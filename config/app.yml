@@ -1,2 +1,9 @@
 mysql:
   dns: root:anwma@tcp(127.0.0.1:3306)/ginchat?charset=utf8mb4&parseTime=True&loc=Local
+
+redis:
+  addr: "123.249.28.212:6379"
+  password: "anwma"
+  DB: 0
+  poolSize: 30
+  minIdleConn: 30

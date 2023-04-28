@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"github.com/go-redis/redis"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -11,7 +12,10 @@ import (
 	"time"
 )
 
-var DB *gorm.DB
+var (
+	DB    *gorm.DB
+	Redis *redis.Client
+)
 
 func InitConfig() {
 	viper.SetConfigName("app")
@@ -36,6 +40,25 @@ func InitMySQL() {
 
 	DB, _ = gorm.Open(mysql.Open(viper.GetString("mysql.dns")), &gorm.Config{Logger: newLogger})
 	fmt.Println("mysql inited ...")
+	//user := models.UserBasic{}
+	//DB.Find(&user)
+	//fmt.Println(user)
+}
+
+func InitRedis() {
+	Redis = redis.NewClient(&redis.Options{
+		Addr:         viper.GetString("redis.addr"),
+		Password:     viper.GetString("redis.password"),
+		DB:           viper.GetInt("redis.DB"),
+		PoolSize:     viper.GetInt("redis.poolSize"),
+		MinIdleConns: viper.GetInt("redis.minIdleConn"),
+	})
+	pong, err := Redis.Ping().Result()
+	if err != nil {
+		fmt.Println("init redis ...", err)
+	} else {
+		fmt.Println("Redis init Success!!!", pong)
+	}
 	//user := models.UserBasic{}
 	//DB.Find(&user)
 	//fmt.Println(user)
