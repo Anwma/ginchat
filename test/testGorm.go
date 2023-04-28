@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"ginchat/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -20,18 +19,21 @@ func main() {
 		panic("failed to connect database")
 	}
 	// 迁移 schema
-	db.AutoMigrate(&models.UserBasic{})
+	//db.AutoMigrate(&models.UserBasic{})
+	//db.AutoMigrate(&models.Message{})
+	db.AutoMigrate(&models.GroupBasic{})
+	db.AutoMigrate(&models.Contact{})
 
 	// Create
-	user := &models.UserBasic{}
-	user.Name = "Anwma"
-	db.Create(user)
-
-	// Read
-	fmt.Println("------------------------")
-	fmt.Println(db.First(user, 1))
-	//Output: &{0xc000114480 <nil> 1 0xc00028a1c0 0}
-
-	// Update
-	db.Model(user).Update("Password", "anwmajeff")
+	//user := &models.UserBasic{}
+	//user.Name = "Anwma"
+	//db.Create(user)
+	//
+	//// Read
+	//fmt.Println("------------------------")
+	//fmt.Println(db.First(user, 1))
+	////Output: &{0xc000114480 <nil> 1 0xc00028a1c0 0}
+	//
+	//// Update
+	//db.Model(user).Update("Password", "anwmajeff")
 }
