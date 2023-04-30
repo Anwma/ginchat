@@ -18,6 +18,7 @@ func main() {
 	if err != nil {
 		panic("failed to connect database")
 	}
+
 	// 迁移 schema
 	//db.AutoMigrate(&models.UserBasic{})
 	//db.AutoMigrate(&models.Message{})

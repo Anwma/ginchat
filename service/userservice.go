@@ -38,15 +38,27 @@ func GetUserList(c *gin.Context) {
 // @Success 200 {string} json{"code","message"}
 // @Router /user/createUser [get]
 func CreateUser(c *gin.Context) {
+	//user.Name = c.Query("name")
+	//password := c.Query("password")
+	//repassword := c.Query("repassword")
 	user := models.UserBasic{}
-	user.Name = c.Query("name")
-	password := c.Query("password")
-	repassword := c.Query("repassword")
+	user.Name = c.Request.FormValue("name")
+	password := c.Request.FormValue("password")
+	repassword := c.Request.FormValue("Identity")
+
 	//盐值
 	rand.Seed(time.Now().Unix()) //随机数种子 真随机数
 	salt := fmt.Sprintf("%06d", rand.Int())
 
 	data := models.FindUserByName(user.Name)
+	if user.Name == "" || password == "" || repassword == "" {
+		c.JSON(200, gin.H{
+			"code":    -1, //0 成功 -1失败
+			"message": "用户名或密码不能为空",
+			"data":    user,
+		})
+		return
+	}
 	if data.Name != "" {
 		c.JSON(200, gin.H{
 			"code":    -1, //0 成功 -1失败
@@ -141,8 +153,10 @@ func UpdateUser(c *gin.Context) {
 func FindUserByNameAndPwd(c *gin.Context) {
 	data := models.UserBasic{}
 
-	name := c.Query("name")
-	password := c.Query("password")
+	//name := c.Query("name")
+	//password := c.Query("password")
+	name := c.Request.FormValue("name")
+	password := c.Request.FormValue("password")
 
 	user := models.FindUserByName(name)
 	if user.Name == "" {
@@ -220,3 +234,57 @@ func MsgHandler(ws *websocket.Conn, c *gin.Context) {
 func SendUserMsg(c *gin.Context) {
 	models.Chat(c.Writer, c.Request)
 }
+
+// 新建群
+func CreateCommunity(c *gin.Context) {
+	ownerId, _ := strconv.Atoi(c.Request.FormValue("ownerId"))
+	name := c.Request.FormValue("name")
+	icon := c.Request.FormValue("icon")
+	desc := c.Request.FormValue("desc")
+	community := models.Community{}
+	community.OwnerId = uint(ownerId)
+	community.Name = name
+	community.Img = icon
+	community.Desc = desc
+	code, msg := models.CreateCommunity(community)
+	if code == 0 {
+		utils.RespOK(c.Writer, code, msg)
+	} else {
+		utils.RespFail(c.Writer, msg)
+	}
+}
+
+//// LoadCommunity 加载群列表
+//func LoadCommunity(c *gin.Context) {
+//	ownerId, _ := strconv.Atoi(c.Request.FormValue("ownerId"))
+//	//	name := c.Request.FormValue("name")
+//	data, msg := models.LoadCommunity(uint(ownerId))
+//	if len(data) != 0 {
+//		utils.RespList(c.Writer, 0, data, msg)
+//	} else {
+//		utils.RespFail(c.Writer, msg)
+//	}
+//}
+//
+//// JoinGroups 加入群 userId uint, comId uint
+//func JoinGroups(c *gin.Context) {
+//	userId, _ := strconv.Atoi(c.Request.FormValue("userId"))
+//	comId := c.Request.FormValue("comId")
+//
+//	//	name := c.Request.FormValue("name")
+//	data, msg := models.JoinGroup(uint(userId), comId)
+//	if data == 0 {
+//		utils.RespOK(c.Writer, data, msg)
+//	} else {
+//		utils.RespFail(c.Writer, msg)
+//	}
+//}
+//
+//func FindByID(c *gin.Context) {
+//	userId, _ := strconv.Atoi(c.Request.FormValue("userId"))
+//
+//	//	name := c.Request.FormValue("name")
+//	data := models.FindByID(uint(userId))
+//	utils.RespOK(c.Writer, data, "ok")
+//}
+//
